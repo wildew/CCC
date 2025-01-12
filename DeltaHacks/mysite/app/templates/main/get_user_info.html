@@ -1,0 +1,180 @@
+{% extends 'main/navbar.html' %}
+{% block content %}
+<!DOCTYPE html>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+        color: #333;
+    }
+
+    h1 {
+        color: #0074D9;
+        text-align: center;
+    }
+
+    form {
+        margin: 0 auto;
+        width: 50%;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 5px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    #outer {
+        display: flex;
+        justify-content: space-between;
+        width: 75%;
+        margin: 20px 0;
+    }
+
+    #container {
+        margin-top: 20px;
+        width: 100%;
+        padding: 20px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    header {
+        background-color: #0074D9;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+</style>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Information Form</title>
+</head>
+<body>
+    <header style="padding-top: 6vw;">
+        <h1 style="color: white">Loan Prediction Input Form</h1>
+        <p>Check your loan elegibility today!</p>
+    </header>
+    <center>
+    <div id="outer">
+    <div id="container">
+    <form method="POST" action="/submit-info/">
+        {% csrf_token %}
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="Age" min="18" max="90" required><br><br>
+
+        <label for="annual-income">Annual Income:</label>
+        <input type="number" id="annual-income" name="AnnualIncome" min="0" required><br><br>
+
+        <label for="credit-score">Credit Score:</label>
+        <input type="number" id="credit-score" name="CreditScore" min="300" max="900" required><br><br>
+
+        <label for="credit-score">Loan Amount:</label>
+        <input type="number" id="credit-score" name="LoanAmount" required><br><br>
+
+
+        <label for="experience">Experience (Years):</label>
+        <input type="number" id="experience" name="Experience" min="0" required><br><br>
+
+        <label for="loan-duration">Loan Duration (Months):</label>
+        <input type="number" id="loan-duration" name="LoanDuration" min="12" max="360" required><br><br>
+
+        <label for="dependents">Number of Dependents:</label>
+        <input type="number" id="dependents" name="NumberOfDependents" min="0" required><br><br>
+
+        <label for="monthly-debt">Monthly Debt Payments:</label>
+        <input type="number" id="monthly-debt" name="MonthlyDebtPayments" min="0" required><br><br>
+
+        <label for="credit-utilization">Credit Card Utilization Rate:</label>
+        <input type="number" id="credit-utilization" name="CreditCardUtilizationRate" min="0" step="0.01" required><br><br>
+
+        <label for="open-credit-lines">Number of Open Credit Lines:</label>
+        <input type="number" id="open-credit-lines" name="NumberOfOpenCreditLines" min="0" required><br><br>
+
+        <label for="credit-inquiries">Number of Credit Inquiries:</label>
+        <input type="number" id="credit-inquiries" name="NumberOfCreditInquiries" min="0" required><br><br>
+
+        <label for="debt-to-income">Debt to Income Ratio:</label>
+        <input type="number" id="debt-to-income" name="DebtToIncomeRatio" min="0" step="0.01" required><br><br>
+
+        <label for="bankruptcy">History of Bankruptcy:</label>
+        <select id="bankruptcy" name="BankruptcyHistory" required>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+        </select><br><br>
+
+        <label for="previous-defaults">Previous Loan Defaults:</label>
+        <select id="previous-defaults" name="PreviousLoanDefaults" required>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+        </select><br><br>
+
+        <label for="savings-balance">Savings Account Balance:</label>
+        <input type="number" id="savings-balance" name="SavingsAccountBalance" min="0" required><br><br>
+
+        <label for="checking-balance">Checking Account Balance:</label>
+        <input type="number" id="checking-balance" name="CheckingAccountBalance" min="0" required><br><br>
+
+        <label for="total-assets">Total Assets:</label>
+        <input type="number" id="total-assets" name="TotalAssets" min="0" required><br><br>
+
+        <label for="total-liabilities">Total Liabilities:</label>
+        <input type="number" id="total-liabilities" name="TotalLiabilities" min="0" required><br><br>
+
+        <label for="monthly-income">Monthly Income:</label>
+        <input type="number" id="monthly-income" name="MonthlyIncome" min="0" required><br><br>
+
+        <label for="net-worth">Net Worth:</label>
+        <input type="number" id="net-worth" name="NetWorth" min="0" required><br><br>
+
+        <label for="total-debt-to-income">Total Debt to Income Ratio:</label>
+        <input type="number" id="total-debt-to-income" name="TotalDebtToIncomeRatio" min="0" step="0.01" required><br><br>
+
+        <label for="risk-score">Risk Score (as reported on FICO):</label>
+        <input type="number" id="risk-score" name="RiskScore" min="0" max="100" required><br><br>
+
+        <label for="approved">Loan Approved by Bank:</label>
+        <select id="approved" name="Approved" required>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+        </select><br><br>
+
+        <label for="interest-rate">Bank Loan Interest Rate:</label>
+        <input type="number" id="interest-rate" name="InterestRate" step="0.01" min="0" required><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+    </div>
+    </div>
+    </center>
+</body>
+</html>
+{% endblock %}

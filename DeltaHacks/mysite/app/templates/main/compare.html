@@ -1,0 +1,368 @@
+{% extends 'main/navbar.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- Resources -->
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .comparison {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            margin: 20px 0;
+        }
+        .comparison .column {
+            width: 45%;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .comparison .column h2 {
+            text-align: center;
+        }
+        .result {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .result.green {
+            color: #28a745;
+        }
+        .result.red {
+            color: #dc3545;
+        }
+        .chart-container {
+            position: relative;
+            margin: 20px auto;
+            width: 200px;
+            height: 200px;
+        }
+        .cta {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .cta button {
+            background-color: hwb(211 0% 0%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .cta button:hover {
+            background-color: #0056b3;
+        }
+        .chartMenu {
+            width: 100vw;
+            height: 40px;
+            background: #1A1A1A;
+            color: rgba(54, 162, 235, 1);
+        }
+        .chartMenu p {
+            padding: 10px;
+            font-size: 20px;
+        }
+        .chartCard {
+            width: 100vw;
+            height: calc(100vh - 40px);
+            background: rgba(54, 162, 235, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chartBox {
+            width: 700px;
+            padding: 20px;
+            border-radius: 20px;
+            border: solid 3px rgba(54, 162, 235, 1);
+            background: white;
+        }
+        header {
+            background-color: #0074D9;
+            width: 100%;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header style="padding-top: 4vw;">
+            <h1 style="color: white">Loan Comparison Results</h1>
+        </header>
+        <div class="comparison">
+            <div class="column">
+                <h2>Bank's Response</h2>
+                <div class="result" id="bank-loan-status"></div>
+                <div class="chart-container">
+                    <canvas id="myCharta"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+            <div class="column">
+                <h2>Our Prediction</h2>
+                <div class="result" id="our-loan-status"></div>
+                <div class="chart-container">
+                    <canvas id="myChartc"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="myChartb"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta" id="cta-section" style="display: none;">
+            <p>We noticed some discrepancies in the evaluation. Consider using our services for a fair assessment!</p>
+            <button onclick="window.location.href='/signup/'">Sign Up</button>
+        </div>
+    </div>
+
+    <script
+        data-bank-loan-approved="{{ bank_approved }}" 
+        data-bank-risk-score="{{ bank_risk_score }}" 
+        data-bank-interest-rate="{{ bank_interest }}"
+        data-our-loan-approved="{{ predicted_approval_probability }}"
+        data-our-risk-score="{{ predicted_risk_score }}"
+        data-our-interest-rate="{{ predicted_interest_rate }}">
+
+        const s = document.currentScript.dataset;
+
+        console.log(s.bankLoanApproved, s.bankRiskScore, s.bankInterestRate)
+        console.log(s.ourLoanApproved, s.ourRiskScore, s.ourInterestRate)
+
+        // Data from backend (replace with actual data)
+        const bankData = {
+            loanApproved: (s.bankLoanApproved === "1"), // true or false
+            riskScore: parseFloat(s.bankRiskScore), // 0 to 100
+            interestRate: parseFloat(s.bankInterestRate) * 100 // 0 to 1
+        };
+
+        console.log(bankData)
+
+        const ourData = {
+            loanApproved: (parseFloat(s.ourLoanApproved) > 0.5), // true or false
+            riskScore: parseFloat(s.ourRiskScore), // 0 to 100
+            interestRate: parseFloat(s.ourInterestRate) * 100 // 0 to 1
+        };
+
+        // Update loan status
+        const bankLoanStatus = document.getElementById('bank-loan-status');
+        const ourLoanStatus = document.getElementById('our-loan-status');
+
+        bankLoanStatus.textContent = bankData.loanApproved ? '✅ Approved' : '❌ Denied';
+        bankLoanStatus.className = `result ${bankData.loanApproved ? 'green' : 'red'}`;
+
+        ourLoanStatus.textContent = ourData.loanApproved ? '✅ Approved' : '❌ Denied';
+        ourLoanStatus.className = `result ${ourData.loanApproved ? 'green' : 'red'}`;
+
+        // Show call-to-action if discrepancies exist
+        if (
+            (!bankData.loanApproved && ourData.loanApproved) ||
+            (bankData.riskScore > ourData.riskScore) ||
+            (bankData.interestRate > ourData.interestRate)
+        ) {
+            document.getElementById('cta-section').style.display = 'block';
+        }
+    
+        const data = {
+        datasets: [{
+            data: [ourData.interestRate, 100-ourData.interestRate, 100],
+            backgroundColor: [
+            'rgba(0, 123, 255, 0.2)',
+            'rgba(51, 51, 51, 0.2)',
+            'rgba(0, 0, 0, 0)'
+            ],
+            borderColor: [
+            'rgba(0, 123, 255, 1)',
+            'rgba(51, 51, 51, 1)',
+            'rgba(0, 0, 0, 0)'
+            ],
+            borderWidth: 1,
+        }]
+        };
+
+        const dataa = {
+        datasets: [{
+            data: [ourData.riskScore, 100-ourData.riskScore, 100],
+            backgroundColor: [
+            'rgba(0, 123, 255, 0.2)',
+            'rgba(51, 51, 51, 0.2)',
+            'rgba(0, 0, 0, 0)'
+            ],
+            borderColor: [
+            'rgba(0, 123, 255, 1)',
+            'rgba(51, 51, 51, 1)',
+            'rgba(0, 0, 0, 0)'
+            ],
+            borderWidth: 1,
+        }]
+        };
+
+        const datab = {
+        datasets: [{
+            data: [bankData.interestRate, 100-bankData.interestRate, 100],
+            backgroundColor: [
+            'rgba(0, 123, 255, 0.2)',
+            'rgba(51, 51, 51, 0.2)',
+            'rgba(0, 0, 0, 0)'
+            ],
+            borderColor: [
+            'rgba(0, 123, 255, 1)',
+            'rgba(51, 51, 51, 1)',
+            'rgba(0, 0, 0, 0)'
+            ],
+            borderWidth: 1,
+        }]
+        };
+
+        console.log(datab)
+
+        const datac = {
+        datasets: [{
+            data: [bankData.riskScore, 100-bankData.riskScore, 100],
+            backgroundColor: [
+            'rgba(0, 123, 255, 0.2)',
+            'rgba(51, 51, 51, 0.2)',
+            'rgba(0, 0, 0, 0)'
+            ],
+            borderColor: [
+            'rgba(0, 123, 255, 1)',
+            'rgba(51, 51, 51, 1)',
+            'rgba(0, 0, 0, 0)'
+            ],
+            borderWidth: 1,
+        }]
+        };
+
+        // config 
+        const config = {
+            type: 'pie',
+            data: datac,
+            options: {
+                rotation: -90,
+                cutout: '50%',
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Risk Score',
+                    },
+                },
+            }
+            
+        };
+
+        const configa = {
+            type: 'pie',
+            data: datab,
+            options: {
+                rotation: -90,
+                cutout: '50%',
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Interest Rate',
+                    },
+                },
+            }
+            
+        };
+
+        // config 
+        const configb = {
+            type: 'pie',
+            data: dataa,
+            options: {
+                rotation: -90,
+                cutout: '50%',
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Risk Score',
+                    },
+                },
+            }
+            
+        };
+
+        const configc = {
+            type: 'pie',
+            data: data,
+            options: {
+                rotation: -90,
+                cutout: '50%',
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Interest Rate',
+                    },
+                },
+            }
+            
+        };
+
+        const a = new Chart(
+        document.getElementById('myCharta'),
+        configa,
+        );
+
+        const myChart = new Chart(
+        document.getElementById('myChart'),
+        config,
+        );
+
+        const c = new Chart(
+        document.getElementById('myChartc'),
+        configc,
+        );
+
+        const b = new Chart(
+        document.getElementById('myChartb'),
+        configb,
+        );
+
+        // Instantly assign Chart.js version
+        const chartVersion = document.getElementById('chartVersion');
+        chartVersion.innerText = Chart.version;
+    </script>
+</body>
+</html>
+{% endblock %}

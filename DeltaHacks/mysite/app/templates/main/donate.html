@@ -1,0 +1,96 @@
+{% extends 'main/navbar.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Donate to Community Capital Connect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header {
+            background-color: #0074D9;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2em auto;
+            padding: 2em;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 0.5em;
+        }
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 1.5em;
+        }
+        #paypal-donate-button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 2em;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2em;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+    <script src="https://www.paypalobjects.com/donate/sdk/donate-sdk.js" charset="UTF-8"></script>
+</head>
+<body>
+    <header style="padding-top: 4vw;">
+        <h1>Support Community Capital Connect</h1>
+    </header>
+
+    <div class="container">
+        <h1>Make a Difference</h1>
+        <p>
+            Community Capital Connect is committed to supporting communities in need by providing resources for fair access to financial opportunities. 
+            Your donations will directly contribute to a community pool of funds, ensuring that those who need it most receive equitable 
+            support and opportunities.
+        </p>
+        <p>
+            Every contribution you make goes entirely to helping individuals and communities access fair lending opportunities, 
+            fostering a more inclusive and just financial system. Together, we can make a meaningful impact on countless lives.
+        </p>
+
+        <div id="paypal-donate-button-container"></div>
+
+        <script>
+            PayPal.Donation.Button({
+                env: 'sandbox', // Change to 'production' when going live
+                hosted_button_id: 'YOUR_SANDBOX_HOSTED_BUTTON_ID',
+                image: {
+                    src: 'https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif',
+                    title: 'PayPal - The safer, easier way to pay online!',
+                    alt: 'Donate with PayPal button'
+                },
+                onComplete: function (params) {
+                    alert('Thank you for your generous donation!');
+                },
+            }).render('#paypal-donate-button-container');
+        </script>
+    </div>
+
+    <footer>
+        &copy; 2025 Community Capital Connect. All rights reserved.
+    </footer>
+</body>
+</html>
+{% endblock %}
